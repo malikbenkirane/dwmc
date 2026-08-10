@@ -1,23 +1,21 @@
 FROM alpine:3.20
 
-# Install Wayland compositor, VNC server, and supporting tools
+# Install X11 virtual framebuffer, dwm, VNC server, terminal, and fonts
 RUN apk add --no-cache \
-    labwc \
-    wayvnc \
-    foot \
-    mesa-dri-gallium \
-    xvfb-run
+    xvfb \
+    dwm \
+    dmenu \
+    st \
+    xterm \
+    x11vnc \
+    xsetroot \
+    font-dejavu \
+    font-misc-misc
 
-# Configure strict XDG environment requirements
-ENV XDG_RUNTIME_DIR=/tmp/runtime-dir
-ENV WAYLAND_DISPLAY=wayland-0
-
-RUN mkdir -p ${XDG_RUNTIME_DIR} && \
-    chmod 700 ${XDG_RUNTIME_DIR}
+# X11 display and framebuffer resolution
+ENV DISPLAY=:0
+ENV RESOLUTION=1280x720x24
 
 EXPOSE 5900
 
-RUN apk add --no-cache cage
-
-CMD ["sh", "-c", "WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_RENDERER_ALLOW_SOFTWARE=1 WLR_LIBINPUT_NO_DEVICES=1 WLR_HEADLESS_OUTPUTS=1 cage foot & until [ -S ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY} ]; do sleep 0.1; done; sleep 1; wayvnc 0.0.0.0 5900"]
-
+CMD ["sh", "-c", "Xvfb :0 -screen 0 ${RESOLUTION} -ac & sleep 1; DISPLAY=:0 dwm & DISPLAY=:0 xsetroot -solid '#282828' & DISPLAY=:0 st & x11vnc -display :0 -forever -shared -nopw -listen 0.0.0.0 -rfbport 5900"]
