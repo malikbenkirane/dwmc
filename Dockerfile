@@ -15,7 +15,8 @@ RUN apk add --no-cache \
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0
 ENV RESOLUTION=1280x720x24
+ENV VNC_PASSWORD=
 
 EXPOSE 5900
 
-CMD ["sh", "-c", "Xvfb :0 -screen 0 ${RESOLUTION} -ac & sleep 1; DISPLAY=:0 dwm & DISPLAY=:0 xsetroot -solid '#282828' & DISPLAY=:0 st & x11vnc -display :0 -forever -shared -nopw -listen 0.0.0.0 -rfbport 5900"]
+CMD sh -c "Xvfb :0 -screen 0 ${RESOLUTION} -ac & sleep 1; DISPLAY=:0 dwm & DISPLAY=:0 xsetroot -solid '#282828' & DISPLAY=:0 st & if [ -n \"${VNC_PASSWORD}\" ]; then x11vnc -display :0 -forever -shared -passwd \"${VNC_PASSWORD}\" -listen 0.0.0.0 -rfbport 5900; else x11vnc -display :0 -forever -shared -nopw -listen 0.0.0.0 -rfbport 5900; fi"
