@@ -1,16 +1,28 @@
 FROM alpine:3.20
 
-# Install X11 virtual framebuffer, dwm, VNC server, terminal, and fonts
+# Install X11 virtual framebuffer, VNC server, terminal, and fonts
 RUN apk add --no-cache \
     xvfb \
-    dwm \
     dmenu \
     st \
     xterm \
     x11vnc \
     xsetroot \
     font-dejavu \
-    font-misc-misc
+    font-misc-misc \
+    git \
+    make \
+    gcc \
+    musl-dev \
+    libx11-dev \
+    libxft-dev \
+    libxinerama-dev \
+    fontconfig-dev
+
+# Build dwm from source
+RUN git clone https://git.suckless.org/dwm /tmp/dwm && \
+    cd /tmp/dwm && make clean install && \
+    rm -rf /tmp/dwm
 
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0
