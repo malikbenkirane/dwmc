@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Start D-Bus session bus (Chromium needs it)
+dbus-launch --sh-syntax > /dev/null 2>&1
+
 # Start the X virtual framebuffer
 Xvfb :0 -screen 0 "${RESOLUTION}" -ac &
 

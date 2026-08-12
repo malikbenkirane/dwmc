@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-# Install X11 virtual framebuffer, VNC server, terminal, fonts, and sudo
+# Install X11 virtual framebuffer, VNC server, terminal, fonts, sudo, and browser
 RUN apk add --no-cache \
     xvfb \
     dmenu \
@@ -18,7 +18,9 @@ RUN apk add --no-cache \
     libxft-dev \
     libxinerama-dev \
     fontconfig-dev \
-    sudo
+    sudo \
+    chromium \
+    dbus
 
 # Build dwm from source
 RUN git clone https://git.suckless.org/dwm /tmp/dwm && \
@@ -32,6 +34,10 @@ RUN adduser -D -s /bin/sh -h /home/agent agent && \
 
 # Pre-create the X11 socket directory so Xvfb can run as a non-root user
 RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
+
+# Chromium wrapper with flags for headless container (no GPU, no sandbox)
+RUN printf '#!/bin/sh\nexec /usr/bin/chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer "$@"\n' > /usr/local/bin/chromium && \
+    chmod +x /usr/local/bin/chromium
 
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0
