@@ -1,7 +1,7 @@
 FROM dwmc
 
 USER root
-RUN apk add --no-cache cargo rust
+RUN apk add --no-cache cargo rust firefox htop 
 
 USER agent
 WORKDIR /home/agent
