@@ -1,0 +1,7 @@
+FROM dwmc
+
+USER root
+RUN apk add --no-cache cargo rust
+
+USER agent
+WORKDIR /home/agent
