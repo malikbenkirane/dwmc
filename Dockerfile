@@ -20,6 +20,7 @@ RUN apk add --no-cache \
     fontconfig-dev \
     sudo \
     chromium \
+    firefox \
     dbus
 
 # Build dwm from source

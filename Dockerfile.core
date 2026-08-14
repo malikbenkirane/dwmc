@@ -1,10 +1,10 @@
 FROM dwmc
 
 USER root
-RUN apk add --no-cache cargo rust firefox htop
+RUN apk add --no-cache htop curl
 
 # Install Go from official binary release
-RUN apk add --no-cache curl &&\
+RUN \
     curl -fsSL https://go.dev/dl/go1.26.5.linux-amd64.tar.gz -o /tmp/go.tar.gz && \
     tar -C /usr/local -xzf /tmp/go.tar.gz && \
     rm /tmp/go.tar.gz
