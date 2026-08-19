@@ -1,27 +1,30 @@
-FROM alpine:3.20
+FROM debian:12.15-slim
 
 # Install X11 virtual framebuffer, VNC server, terminal, fonts, sudo, and browser
-RUN apk add --no-cache \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     xvfb \
     dmenu \
-    st \
+    stterm \
     xterm \
     x11vnc \
-    xsetroot \
-    font-dejavu \
-    font-misc-misc \
+    x11-apps \
+    fonts-dejavu \
+    xfonts-base \
     git \
     make \
     gcc \
-    musl-dev \
+    libc6-dev \
     libx11-dev \
     libxft-dev \
     libxinerama-dev \
-    fontconfig-dev \
+    libfontconfig-dev \
     sudo \
     chromium \
-    firefox \
-    dbus
+    firefox-esr \
+    dbus \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Build dwm from source
 RUN git clone https://git.suckless.org/dwm /tmp/dwm && \
@@ -29,7 +32,7 @@ RUN git clone https://git.suckless.org/dwm /tmp/dwm && \
     rm -rf /tmp/dwm
 
 # Create the agent user with passwordless sudo access
-RUN adduser -D -s /bin/sh -h /home/agent agent && \
+RUN useradd -m -s /bin/sh agent && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent && \
     chmod 0440 /etc/sudoers.d/agent
 
@@ -37,8 +40,11 @@ RUN adduser -D -s /bin/sh -h /home/agent agent && \
 RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 
 # Chromium wrapper with flags for headless container (no GPU, no sandbox)
-RUN printf '#!/bin/sh\nexec /usr/bin/chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer "$@"\n' > /usr/local/bin/chromium && \
+RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer "$@"\n' > /usr/local/bin/chromium && \
     chmod +x /usr/local/bin/chromium
+
+# Symlink firefox command to firefox-esr for compatibility
+RUN ln -s /usr/bin/firefox-esr /usr/bin/firefox
 
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0

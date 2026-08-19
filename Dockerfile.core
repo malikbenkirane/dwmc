@@ -1,7 +1,9 @@
 FROM dwmc
 
 USER root
-RUN apk add --no-cache htop curl
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Go from official binary release
 RUN \
