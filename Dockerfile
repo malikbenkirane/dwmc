@@ -43,9 +43,6 @@ RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer "$@"\n' > /usr/local/bin/chromium && \
     chmod +x /usr/local/bin/chromium
 
-# Symlink firefox command to firefox-esr for compatibility
-RUN ln -s /usr/bin/firefox-esr /usr/bin/firefox
-
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0
 ENV RESOLUTION=1280x720x24
