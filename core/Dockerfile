@@ -29,3 +29,11 @@ RUN git clone https://github.com/Echinoidea/Aporetic-Nerd-Font /tmp/aporetic && 
     find . -name '*.ttf' -exec cp {} /home/agent/.local/share/fonts/ \; && \
     rm -rf /tmp/aporetic && \
     fc-cache -f
+
+# Build and install patched st
+COPY --chown=agent:agent st.diff /tmp/st.diff
+RUN git clone https://git.suckless.org/st /tmp/st && \
+    cd /tmp/st && git checkout 0.9.2 && \
+    git apply /tmp/st.diff && \
+    make && sudo make install && \
+    rm -rf /tmp/st /tmp/st.diff
