@@ -22,3 +22,10 @@ RUN curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.0/
     find /tmp/proggyclean -name '*.ttf' -exec cp {} /home/agent/.local/share/fonts/ \; && \
     rm -rf /tmp/ProggyClean.zip /tmp/proggyclean && \
     fc-cache -f
+
+# Install Aporetic Nerd Font
+RUN git clone https://github.com/Echinoidea/Aporetic-Nerd-Font /tmp/aporetic && \
+    cd /tmp/aporetic && git checkout 88ae58a && \
+    find . -name '*.ttf' -exec cp {} /home/agent/.local/share/fonts/ \; && \
+    rm -rf /tmp/aporetic && \
+    fc-cache -f
