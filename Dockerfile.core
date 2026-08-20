@@ -1,8 +1,8 @@
-FROM dwmc
+FROM dwmc:bookworm
 
 USER root
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl unzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Go from official binary release
@@ -14,3 +14,11 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 
 USER agent
 WORKDIR /home/agent
+
+# Install ProggyClean Nerd Font
+RUN curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.0/ProggyClean.zip -o /tmp/ProggyClean.zip && \
+    mkdir -p /home/agent/.local/share/fonts && \
+    unzip -o /tmp/ProggyClean.zip -d /tmp/proggyclean && \
+    find /tmp/proggyclean -name '*.ttf' -exec cp {} /home/agent/.local/share/fonts/ \; && \
+    rm -rf /tmp/ProggyClean.zip /tmp/proggyclean && \
+    fc-cache -f
