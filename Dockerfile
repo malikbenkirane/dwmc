@@ -47,6 +47,7 @@ RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disab
 ENV DISPLAY=:0
 ENV RESOLUTION=1280x720x24
 ENV VNC_PASSWORD=
+ENV SHELL=/usr/bin/bash
 
 # Copy the session entrypoint script
 COPY entrypoint.sh /entrypoint.sh
