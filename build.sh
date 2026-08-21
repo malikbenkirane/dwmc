@@ -1,4 +1,6 @@
 #!/bin/sh -ex
 
-container build -t dwmc:bookworm .
-container build -t dwmc:core ./core
+CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-container}"
+
+"$CONTAINER_RUNTIME" build -t dwmc:bookworm .
+"$CONTAINER_RUNTIME" build -t dwmc:core ./core
