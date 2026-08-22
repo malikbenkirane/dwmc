@@ -47,7 +47,7 @@ RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disab
 ENV DISPLAY=:0
 ENV GEOMETRY=1920x1080
 ENV DEPTH=24
-ENV DPI=192
+ENV DPI=100
 ENV VNC_PASSWORD=
 ENV SHELL=/usr/bin/bash
 

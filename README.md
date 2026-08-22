@@ -63,7 +63,7 @@ The framebuffer geometry and DPI are configurable via env vars, with defaults tu
 |----------|---------|-------------|
 | `GEOMETRY` | `1920x1080` | `WxH` passed to `vncserver -geometry` |
 | `DEPTH` | `24` | Pixel depth in bits, passed to `vncserver -depth` |
-| `DPI` | `192` | DPI passed to `vncserver -dpi` (affects font and UI scaling) |
+| `DPI` | `100` | DPI passed to `vncserver -dpi` (affects font and UI scaling) |
 
 Override at run time:
 
