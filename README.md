@@ -11,6 +11,7 @@ Three images built in sequence:
 | `dwmc:tools` | `tools/Dockerfile` | Standalone binaries (crush, jj) downloaded as tarballs |
 | `dwmc:bookworm` | `Dockerfile` | Base desktop: Xvfb, x11vnc, dwm, st, Chromium, Firefox |
 | `dwmc:core` | `core/Dockerfile` | Full dev environment: Go, fonts, gcloud CLI, tools from `dwmc:tools` |
+| `dwmc:golang` | `golang/Dockerfile` | Go LSP and debugging tools (gopls, golangci-lint, dlv) layered on `dwmc:core` |
 
 `core/Dockerfile` uses a multi-stage build: it pulls pre-built binaries from `dwmc:tools` via `COPY --from=tools`, then layers system packages and development tools on top of `dwmc:bookworm`.
 
@@ -37,6 +38,22 @@ Connect to `localhost:5900` with any VNC client. Set `VNC_PASSWORD` for authenti
 ```sh
 container run -p 5900:5900 -e VNC_PASSWORD=secret dwmc:core
 ```
+
+### Common use
+
+A typical workflow: mount your project and host configs (gcloud, crush, helix) into the container, run it detached with resource limits, then connect via VNC:
+
+```sh
+container run --rm -d \
+  -v ~/.config/gcloud:/home/agent/.config/gcloud \
+  -v ~/.config/crush/:/home/agent/.config/crush \
+  -v ~/.config/helix/:/home/agent/.config/helix \
+  -v ~/uc:/home/agent/uc --name uc \
+  --memory 8G --cpus 8 \
+  dwmc:golang
+```
+
+Connect to the container's VNC port (e.g. with TigerVNC) and you get a full desktop with access to your host gcloud credentials, Crush, and Helix configuration, working on project `uc`.
 
 ### Display resolution and DPI
 
