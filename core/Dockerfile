@@ -1,3 +1,5 @@
+FROM dwmc:tools AS tools
+
 FROM dwmc:bookworm
 
 USER root
@@ -37,3 +39,9 @@ RUN git clone https://git.suckless.org/st /tmp/st && \
     git apply /tmp/st.diff && \
     make && sudo make install && \
     rm -rf /tmp/st /tmp/st.diff
+
+# Copy pre-built tools from the tools stage
+USER root
+COPY --from=tools /usr/local/bin/crush /usr/local/bin/crush
+COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
+USER agent
