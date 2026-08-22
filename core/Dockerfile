@@ -44,4 +44,17 @@ RUN git clone https://git.suckless.org/st /tmp/st && \
 USER root
 COPY --from=tools /usr/local/bin/crush /usr/local/bin/crush
 COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
+
+# Install Google Cloud CLI and GKE auth plugin
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gnupg && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
+      | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+      | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    apt-get update && \
+    CLOUDSDK_SKIP_PY_COMPILATION=1 apt-get install -y --no-install-recommends \
+      google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin && \
+    rm -rf /var/lib/apt/lists/*
+
 USER agent
