@@ -1,27 +1,37 @@
 #!/bin/sh
 
-# Start D-Bus session bus (Chromium needs it)
+# Create VNC config directory
+mkdir -p "${HOME}/.vnc"
+
+# Generate the xstartup script
+cat > "${HOME}/.vnc/xstartup" << 'EOF'
+#!/bin/sh
 dbus-launch --sh-syntax > /dev/null 2>&1
+xsetroot -solid '#282828' &
+st &
+exec dwm
+EOF
+chmod +x "${HOME}/.vnc/xstartup"
 
-# Start the X virtual framebuffer
-Xvfb :0 -screen 0 "${RESOLUTION}" -dpi "${DPI}" -ac &
-
-# Wait until the X display is ready
-for i in $(seq 1 30); do
-    if [ -S /tmp/.X11-unix/X0 ]; then
-        break
-    fi
-    sleep 0.5
-done
-
-# Start the window manager, set the background, and open a terminal
-DISPLAY=:0 dwm &
-DISPLAY=:0 xsetroot -solid '#282828' &
-DISPLAY=:0 st &
-
-# Start the VNC server in the foreground
+# Start the TigerVNC server in the foreground
 if [ -n "${VNC_PASSWORD}" ]; then
-    exec x11vnc -display :0 -forever -shared -passwd "${VNC_PASSWORD}" -listen 0.0.0.0 -rfbport 5900
+    echo "${VNC_PASSWORD}" | vncpasswd -f > "${HOME}/.vnc/passwd"
+    chmod 600 "${HOME}/.vnc/passwd"
+    exec vncserver :0 -fg \
+        -geometry "${GEOMETRY}" \
+        -depth "${DEPTH}" \
+        -dpi "${DPI}" \
+        -localhost no \
+        -SecurityTypes VncAuth \
+        -PasswordFile "${HOME}/.vnc/passwd" \
+        -xstartup "${HOME}/.vnc/xstartup"
 else
-    exec x11vnc -display :0 -forever -shared -nopw -listen 0.0.0.0 -rfbport 5900
+    exec vncserver :0 -fg \
+        -geometry "${GEOMETRY}" \
+        -depth "${DEPTH}" \
+        -dpi "${DPI}" \
+        -localhost no \
+        -SecurityTypes None \
+        --I-KNOW-THIS-IS-INSECURE \
+        -xstartup "${HOME}/.vnc/xstartup"
 fi

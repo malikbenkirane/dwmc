@@ -9,7 +9,7 @@ Three images built in sequence:
 | Image | Dockerfile | Description |
 |-------|-----------|-------------|
 | `dwmc:tools` | `tools/Dockerfile` | Standalone binaries (crush, jj) downloaded as tarballs |
-| `dwmc:bookworm` | `Dockerfile` | Base desktop: Xvfb, x11vnc, dwm, st, Chromium, Firefox |
+| `dwmc:bookworm` | `Dockerfile` | Base desktop: TigerVNC, dwm, st, Chromium, Firefox |
 | `dwmc:core` | `core/Dockerfile` | Full dev environment: Go, fonts, gcloud CLI, tools from `dwmc:tools` |
 | `dwmc:golang` | `golang/Dockerfile` | Go LSP and debugging tools (gopls, golangci-lint, dlv) layered on `dwmc:core` |
 
@@ -30,13 +30,13 @@ CONTAINER_RUNTIME=docker ./build.sh
 ## Running
 
 ```sh
-container run -p 5900:5900 dwmc:core
+container run -d dwmc:core
 ```
 
-Connect to `localhost:5900` with any VNC client. Set `VNC_PASSWORD` for authenticated access:
+The container is accessible on the host subnet. Find its IP with `container ls`, then connect to port 5900 with any VNC client. Set `VNC_PASSWORD` for authenticated access:
 
 ```sh
-container run -p 5900:5900 -e VNC_PASSWORD=secret dwmc:core
+container run -d -e VNC_PASSWORD=secret dwmc:core
 ```
 
 ### Common use
@@ -44,7 +44,7 @@ container run -p 5900:5900 -e VNC_PASSWORD=secret dwmc:core
 A typical workflow: mount your project and host configs (gcloud, crush, helix) into the container, run it detached with resource limits, then connect via VNC:
 
 ```sh
-container run --rm -d \
+container run -d \
   -v ~/.config/gcloud:/home/agent/.config/gcloud \
   -v ~/.config/crush/:/home/agent/.config/crush \
   -v ~/.config/helix/:/home/agent/.config/helix \
@@ -61,13 +61,14 @@ The framebuffer geometry and DPI are configurable via env vars, with defaults tu
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `RESOLUTION` | `1280x720x24` | `WxHxdepth` passed to `Xvfb -screen 0` |
-| `DPI` | `100` | DPI passed to `Xvfb -dpi` (affects font and UI scaling) |
+| `GEOMETRY` | `1920x1080` | `WxH` passed to `vncserver -geometry` |
+| `DEPTH` | `24` | Pixel depth in bits, passed to `vncserver -depth` |
+| `DPI` | `192` | DPI passed to `vncserver -dpi` (affects font and UI scaling) |
 
-Override either at run time:
+Override at run time:
 
 ```sh
-container run -p 5900:5900 -e RESOLUTION=1920x1080x24 -e DPI=96 dwmc:core
+container run -e GEOMETRY=1280x720 -e DPI=96 dwmc:core
 ```
 
 ## Troubleshooting

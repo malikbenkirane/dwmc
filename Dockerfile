@@ -1,13 +1,13 @@
 FROM debian:12.15-slim
 
-# Install X11 virtual framebuffer, VNC server, terminal, fonts, sudo, and browser
+# Install TigerVNC server, terminal, fonts, sudo, and browser
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    xvfb \
+    tigervnc-standalone-server \
     dmenu \
     stterm \
     xterm \
-    x11vnc \
+    xinit \
     x11-apps \
     fonts-dejavu \
     xfonts-base \
@@ -36,17 +36,18 @@ RUN useradd -m -s /bin/sh agent && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent && \
     chmod 0440 /etc/sudoers.d/agent
 
-# Pre-create the X11 socket directory so Xvfb can run as a non-root user
+# Pre-create the X11 socket directory so Xvnc can run as a non-root user
 RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 
 # Chromium wrapper with flags for headless container (no GPU, no sandbox)
 RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer "$@"\n' > /usr/local/bin/chromium && \
     chmod +x /usr/local/bin/chromium
 
-# X11 display and framebuffer resolution
+# X11 display, geometry, and DPI
 ENV DISPLAY=:0
-ENV RESOLUTION=1280x720x24
-ENV DPI=100
+ENV GEOMETRY=1920x1080
+ENV DEPTH=24
+ENV DPI=192
 ENV VNC_PASSWORD=
 ENV SHELL=/usr/bin/bash
 
