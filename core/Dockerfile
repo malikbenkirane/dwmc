@@ -44,6 +44,9 @@ RUN git clone https://git.suckless.org/st /tmp/st && \
 USER root
 COPY --from=tools /usr/local/bin/crush /usr/local/bin/crush
 COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
+COPY --from=tools /usr/local/bin/hx /usr/local/bin/hx
+COPY --from=tools /usr/local/lib/helix-runtime /usr/local/lib/helix-runtime
+ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
 
 # Install Google Cloud CLI and GKE auth plugin
 RUN apt-get update && \

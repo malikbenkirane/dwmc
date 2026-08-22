@@ -18,4 +18,17 @@ RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac
     install -m 755 /tmp/jj /usr/local/bin/jj && \
     rm -rf /tmp/jj.tar.gz /tmp/jj
 
+RUN curl -fsSL "http://deb.debian.org/debian/pool/main/x/xz-utils/xz-utils_5.4.1-1+deb12u1_${TARGETARCH}.deb" -o /tmp/xz-utils.deb && \
+    dpkg -i /tmp/xz-utils.deb && \
+    rm /tmp/xz-utils.deb
+
+ARG HELIX_VERSION=25.07.1
+RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac) && \
+    curl -fsSL "https://github.com/helix-editor/helix/releases/download/${HELIX_VERSION}/helix-${HELIX_VERSION}-${arch}-linux.tar.xz" -o /tmp/helix.tar.xz && \
+    tar -xJf /tmp/helix.tar.xz -C /tmp && \
+    install -m 755 "/tmp/helix-${HELIX_VERSION}-${arch}-linux/hx" /usr/local/bin/hx && \
+    cp -r "/tmp/helix-${HELIX_VERSION}-${arch}-linux/runtime" /usr/local/lib/helix-runtime && \
+    rm -rf /tmp/helix.tar.xz "/tmp/helix-${HELIX_VERSION}-${arch}-linux"
+ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
+
 WORKDIR /workspace
