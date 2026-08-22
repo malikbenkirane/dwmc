@@ -4,7 +4,7 @@
 dbus-launch --sh-syntax > /dev/null 2>&1
 
 # Start the X virtual framebuffer
-Xvfb :0 -screen 0 "${RESOLUTION}" -ac &
+Xvfb :0 -screen 0 "${RESOLUTION}" -dpi "${DPI}" -ac &
 
 # Wait until the X display is ready
 for i in $(seq 1 30); do

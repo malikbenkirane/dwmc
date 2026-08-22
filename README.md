@@ -38,6 +38,21 @@ Connect to `localhost:5900` with any VNC client. Set `VNC_PASSWORD` for authenti
 container run -p 5900:5900 -e VNC_PASSWORD=secret dwmc:core
 ```
 
+### Display resolution and DPI
+
+The framebuffer geometry and DPI are configurable via env vars, with defaults tuned for Retina-class displays:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RESOLUTION` | `1280x720x24` | `WxHxdepth` passed to `Xvfb -screen 0` |
+| `DPI` | `100` | DPI passed to `Xvfb -dpi` (affects font and UI scaling) |
+
+Override either at run time:
+
+```sh
+container run -p 5900:5900 -e RESOLUTION=1920x1080x24 -e DPI=96 dwmc:core
+```
+
 ## Troubleshooting
 
 ### Build fails with "Temporary failure resolving" DNS errors

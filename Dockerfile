@@ -46,6 +46,7 @@ RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-gpu --disab
 # X11 display and framebuffer resolution
 ENV DISPLAY=:0
 ENV RESOLUTION=1280x720x24
+ENV DPI=100
 ENV VNC_PASSWORD=
 ENV SHELL=/usr/bin/bash
 
