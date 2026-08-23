@@ -7,13 +7,6 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Go from official binary release
-RUN \
-    curl -fsSL https://go.dev/dl/go1.26.5.linux-arm64.tar.gz -o /tmp/go.tar.gz && \
-    tar -C /usr/local -xzf /tmp/go.tar.gz && \
-    rm /tmp/go.tar.gz
-ENV PATH="/usr/local/go/bin:${PATH}"
-
 USER agent
 WORKDIR /home/agent
 

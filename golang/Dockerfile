@@ -10,6 +10,8 @@ RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 FROM dwmc:core
 USER root
+COPY --from=gopls-builder /usr/local/go /usr/local/go
+ENV PATH="/home/agent/go/bin:/usr/local/go/bin:${PATH}"
 COPY --from=gopls-builder /go/bin/gopls /usr/local/bin/gopls
 COPY --from=golangci-lint-builder /go/bin/golangci-lint-langserver /usr/local/bin/golangci-lint-langserver
 COPY --from=golangci-lint-builder /go/bin/golangci-lint /usr/local/bin/golangci-lint
