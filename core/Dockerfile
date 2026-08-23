@@ -34,6 +34,7 @@ RUN git clone https://git.suckless.org/st /tmp/st && \
     rm -rf /tmp/st /tmp/st.diff
 
 # Install Google Cloud CLI and GKE auth plugin
+USER root
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gnupg && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
