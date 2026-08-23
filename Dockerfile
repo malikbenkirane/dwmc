@@ -26,10 +26,16 @@ RUN apt-get update && \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Install kitty terminal
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends kitty && \
+    rm -rf /var/lib/apt/lists/*
+
 # Build dwm from source
+COPY dwm.diff /tmp/dwm.diff
 RUN git clone https://git.suckless.org/dwm /tmp/dwm && \
-    cd /tmp/dwm && make clean install && \
-    rm -rf /tmp/dwm
+    cd /tmp/dwm && git checkout 6.8 && git apply /tmp/dwm.diff && make clean install && \
+    rm -rf /tmp/dwm /tmp/dwm.diff
 
 # Create the agent user with passwordless sudo access
 RUN useradd -m -s /bin/sh agent && \

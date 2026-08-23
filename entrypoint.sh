@@ -8,7 +8,7 @@ cat > "${HOME}/.vnc/xstartup" << 'EOF'
 #!/bin/sh
 dbus-launch --sh-syntax > /dev/null 2>&1
 xsetroot -solid '#282828' &
-st &
+kitty &
 exec dwm
 EOF
 chmod +x "${HOME}/.vnc/xstartup"
