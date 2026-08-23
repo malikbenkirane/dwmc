@@ -33,14 +33,6 @@ RUN git clone https://git.suckless.org/st /tmp/st && \
     make && sudo make install && \
     rm -rf /tmp/st /tmp/st.diff
 
-# Copy pre-built tools from the tools stage
-USER root
-COPY --from=tools /usr/local/bin/crush /usr/local/bin/crush
-COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
-COPY --from=tools /usr/local/bin/hx /usr/local/bin/hx
-COPY --from=tools /usr/local/lib/helix-runtime /usr/local/lib/helix-runtime
-ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
-
 # Install Google Cloud CLI and GKE auth plugin
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends gnupg && \
@@ -52,5 +44,13 @@ RUN apt-get update && \
     CLOUDSDK_SKIP_PY_COMPILATION=1 apt-get install -y --no-install-recommends \
       google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin && \
     rm -rf /var/lib/apt/lists/*
+
+# Copy pre-built tools from the tools stage
+USER root
+COPY --from=tools /usr/local/bin/crush /usr/local/bin/crush
+COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
+COPY --from=tools /usr/local/bin/hx /usr/local/bin/hx
+COPY --from=tools /usr/local/lib/helix-runtime /usr/local/lib/helix-runtime
+ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
 
 USER agent
