@@ -1,6 +1,6 @@
 # dwmc
 
-Containerized X11/VNC desktop environment with development tools, built on Debian Bookworm.
+dwmc is a lightweight dwm desktop on Debian Bookworm with TigerVNC, browsers, and a pinned development toolchain. It targets Apple Silicon and the native container framework there, giving you a full remote coding environment reachable from any VNC client.
 
 ## Architecture
 
