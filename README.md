@@ -60,19 +60,23 @@ container run -d -e VNC_PASSWORD=secret dwmc:core
 
 ### Common use
 
-A typical workflow: mount your project and host configs (gcloud, crush, helix) into the container, run it detached with resource limits, then connect via VNC:
+A typical workflow: mount your project, host configs, SSH keys, and a shared clipboard directory into the container, run it detached with resource limits, then connect via VNC:
 
 ```sh
-container run -d \
+container run --rm -d \
   -v ~/.config/gcloud:/home/agent/.config/gcloud \
   -v ~/.config/crush/:/home/agent/.config/crush \
+  -v ~/.agents:/home/agent/.agents \
   -v ~/.config/helix/:/home/agent/.config/helix \
-  -v ~/uc:/home/agent/uc --name uc \
-  --memory 8G --cpus 8 \
+  -v ~/.config/jj/:/home/agent/.config/jj \
+  -v ~/.ssh:/home/agent/.ssh \
+  -v ~/d/clip:/clip \
+  -v "${PROJECT_PATH}:/home/agent/${PROJECT_NAME}" --name "${PROJECT_NAME}" \
+  --memory 8G --cpus 8 --shm-size 2g \
   dwmc:golang
 ```
 
-Connect to the container's VNC port (e.g. with TigerVNC) and you get a full desktop with access to your host gcloud credentials, Crush, and Helix configuration, working on project `uc`.
+Connect to the container's VNC port (e.g. with TigerVNC) and you get a full desktop with access to your host gcloud credentials, SSH keys, Crush, Helix, and jj configuration, working on your project. The `--rm` flag removes the container on stop; `--shm-size 2g` gives Chromium and Firefox adequate shared memory (the default 64MB causes crashes and rendering glitches in containers); the `/clip` mount provides a shared clipboard between host and container.
 
 ### Display resolution and DPI
 
@@ -97,7 +101,8 @@ The core image defines several additional environment variables beyond display s
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VNC_PASSWORD` | *(empty)* | VNC authentication password. When empty, VNC runs with `SecurityTypes None` (no authentication). |
-| `LITELLM_HOST` | `192.168.65.1` | IP address mapped to `litellm.test` in `/etc/hosts` at container startup. Override if your LLM proxy runs on a different address. |
+| `LITELLM_HOST` | `192.168.65.1` | IP address injected into `/etc/hosts` alongside `LITELLM_HOSTNAME` at container startup. |
+| `LITELLM_HOSTNAME` | `litellm.test` | Hostname mapped to `LITELLM_HOST` in `/etc/hosts` at container startup. Override both to point at your own LLM proxy. |
 | `EDITOR` | `hx` | Default editor for tools that respect `$EDITOR` (e.g., git, crush). |
 | `SHELL` | `/usr/bin/bash` | Default shell for the agent user. |
 | `DISPLAY` | `:0` | X11 display identifier. The VNC server always starts on `:0`. |

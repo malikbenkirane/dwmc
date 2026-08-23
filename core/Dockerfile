@@ -60,10 +60,11 @@ COPY --from=tools /opt/git /opt/git
 ENV PATH="/opt/git/bin:${PATH}"
 
 ENV LITELLM_HOST=192.168.65.1
+ENV LITELLM_HOSTNAME=litellm.test
 RUN printf '%s\n' \
       '#!/bin/sh' \
       'set -e' \
-      'echo "$LITELLM_HOST litellm.test" | sudo tee -a /etc/hosts' \
+      'echo "$LITELLM_HOST $LITELLM_HOSTNAME" | sudo tee -a /etc/hosts' \
       'exec /entrypoint.sh' \
       > /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
