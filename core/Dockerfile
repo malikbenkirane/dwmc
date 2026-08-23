@@ -54,5 +54,7 @@ COPY --from=tools /usr/local/bin/hx /usr/local/bin/hx
 COPY --from=tools /usr/local/lib/helix-runtime /usr/local/lib/helix-runtime
 ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
 COPY --from=tools /usr/local/bin/rg /usr/local/bin/rg
+COPY --from=tools /opt/git /opt/git
+ENV PATH="/opt/git/bin:${PATH}"
 
 USER agent

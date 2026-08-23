@@ -1,3 +1,17 @@
+FROM rust:1-bookworm AS git-builder
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    build-essential curl ca-certificates zlib1g-dev libssl-dev libexpat1-dev \
+    libcurl4-gnutls-dev gettext && \
+    rm -rf /var/lib/apt/lists/*
+ARG GIT_VERSION=2.55.0
+RUN curl -fsSL "https://kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.gz" -o /tmp/git.tar.gz && \
+    tar -xzf /tmp/git.tar.gz -C /tmp && \
+    cd "/tmp/git-${GIT_VERSION}" && \
+    make prefix=/opt/git NO_TCLTK=1 all -j$(nproc) && \
+    make prefix=/opt/git NO_TCLTK=1 install && \
+    rm -rf /tmp/git.tar.gz "/tmp/git-${GIT_VERSION}"
+
 FROM debian:12.15-slim
 
 RUN apt-get update && \
@@ -37,5 +51,8 @@ RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac
     tar -xzf /tmp/ripgrep.tar.gz -C /tmp && \
     install -m 755 "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl/rg" /usr/local/bin/rg && \
     rm -rf /tmp/ripgrep.tar.gz "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl"
+
+COPY --from=git-builder /opt/git /opt/git
+ENV PATH="/opt/git/bin:${PATH}"
 
 WORKDIR /workspace
