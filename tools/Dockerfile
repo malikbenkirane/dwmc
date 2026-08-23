@@ -31,4 +31,11 @@ RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac
     rm -rf /tmp/helix.tar.xz "/tmp/helix-${HELIX_VERSION}-${arch}-linux"
 ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
 
+ARG RIPGREP_VERSION=15.2.0
+RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac) && \
+    curl -fsSL "https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl.tar.gz" -o /tmp/ripgrep.tar.gz && \
+    tar -xzf /tmp/ripgrep.tar.gz -C /tmp && \
+    install -m 755 "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl/rg" /usr/local/bin/rg && \
+    rm -rf /tmp/ripgrep.tar.gz "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl"
+
 WORKDIR /workspace

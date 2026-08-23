@@ -53,5 +53,6 @@ COPY --from=tools /usr/local/bin/jj /usr/local/bin/jj
 COPY --from=tools /usr/local/bin/hx /usr/local/bin/hx
 COPY --from=tools /usr/local/lib/helix-runtime /usr/local/lib/helix-runtime
 ENV HELIX_RUNTIME=/usr/local/lib/helix-runtime
+COPY --from=tools /usr/local/bin/rg /usr/local/bin/rg
 
 USER agent
