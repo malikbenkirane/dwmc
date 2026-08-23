@@ -52,6 +52,13 @@ RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac
     install -m 755 "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl/rg" /usr/local/bin/rg && \
     rm -rf /tmp/ripgrep.tar.gz "/tmp/ripgrep-${RIPGREP_VERSION}-${arch}-unknown-linux-musl"
 
+ARG GH_VERSION=2.98.0
+RUN arch=$(case "$TARGETARCH" in amd64) echo amd64;; arm64) echo arm64;; esac) && \
+    curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${arch}.tar.gz" -o /tmp/gh.tar.gz && \
+    tar -xzf /tmp/gh.tar.gz -C /tmp && \
+    install -m 755 "/tmp/gh_${GH_VERSION}_linux_${arch}/bin/gh" /usr/local/bin/gh && \
+    rm -rf /tmp/gh.tar.gz "/tmp/gh_${GH_VERSION}_linux_${arch}"
+
 COPY --from=git-builder /opt/git /opt/git
 ENV PATH="/opt/git/bin:${PATH}"
 
