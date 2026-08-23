@@ -4,7 +4,7 @@ FROM dwmc:bookworm
 
 USER root
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl unzip && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends htop curl unzip openssh-client openssh-server && \
     rm -rf /var/lib/apt/lists/*
 
 USER agent
