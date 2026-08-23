@@ -27,6 +27,25 @@ This builds all three images in order. The `CONTAINER_RUNTIME` environment varia
 CONTAINER_RUNTIME=docker ./build.sh
 ```
 
+### Customizing tool versions
+
+The tools image downloads pre-built binaries at pinned versions. Override them with `--build-arg` when building the tools image directly:
+
+| Build arg | Default | Tool |
+|-----------|---------|------|
+| `GIT_VERSION` | `2.55.0` | Git (compiled from source) |
+| `CRUSH_VERSION` | `0.90.0` | Crush |
+| `HELIX_VERSION` | `25.07.1` | Helix editor |
+| `RIPGREP_VERSION` | `15.2.0` | ripgrep |
+| `GH_VERSION` | `2.98.0` | GitHub CLI |
+
+`build.sh` rebuilds all four images in sequence, so build the tools image first with your overrides, then run the full script (cached layers will be reused):
+
+```sh
+container build --build-arg CRUSH_VERSION=0.92.0 -t dwmc:tools ./tools
+./build.sh
+```
+
 ## Running
 
 ```sh
@@ -70,6 +89,18 @@ Override at run time:
 ```sh
 container run -e GEOMETRY=1280x720 -e DPI=96 dwmc:core
 ```
+
+## Environment variables
+
+The core image defines several additional environment variables beyond display settings:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VNC_PASSWORD` | *(empty)* | VNC authentication password. When empty, VNC runs with `SecurityTypes None` (no authentication). |
+| `LITELLM_HOST` | `192.168.65.1` | IP address mapped to `litellm.test` in `/etc/hosts` at container startup. Override if your LLM proxy runs on a different address. |
+| `EDITOR` | `hx` | Default editor for tools that respect `$EDITOR` (e.g., git, crush). |
+| `SHELL` | `/usr/bin/bash` | Default shell for the agent user. |
+| `DISPLAY` | `:0` | X11 display identifier. The VNC server always starts on `:0`. |
 
 ## Troubleshooting
 
