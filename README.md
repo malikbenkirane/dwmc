@@ -4,16 +4,14 @@ dwmc is a lightweight dwm desktop on Debian Bookworm with TigerVNC, browsers, an
 
 ## Architecture
 
-Three images built in sequence:
+Four images built in sequence:
 
 | Image | Dockerfile | Description |
 |-------|-----------|-------------|
-| `dwmc:tools` | `tools/Dockerfile` | Standalone binaries (crush, jj) downloaded as tarballs |
-| `dwmc:bookworm` | `Dockerfile` | Base desktop: TigerVNC, dwm, st, Chromium, Firefox |
-| `dwmc:core` | `core/Dockerfile` | Full dev environment: Go, fonts, gcloud CLI, tools from `dwmc:tools` |
-| `dwmc:golang` | `golang/Dockerfile` | Go LSP and debugging tools (gopls, golangci-lint, dlv) layered on `dwmc:core` |
-
-`core/Dockerfile` uses a multi-stage build: it pulls pre-built binaries from `dwmc:tools` via `COPY --from=tools`, then layers system packages and development tools on top of `dwmc:bookworm`.
+| `dwmc:tools` | `tools/Dockerfile` | Pre-built binaries (crush, jj, helix, ripgrep, gh) downloaded as tarballs, plus Git compiled from source in a `rust:1-bookworm` builder stage |
+| `dwmc:bookworm` | `Dockerfile` | Base desktop: TigerVNC, dwm (patched for kitty), kitty, Chromium, Firefox |
+| `dwmc:core` | `core/Dockerfile` | Full dev environment: fonts, gcloud CLI, SSH, Helix, ripgrep, gh, Git, and tools from `dwmc:tools` |
+| `dwmc:golang` | `golang/Dockerfile` | Go 1.27, gopls, golangci-lint, dlv layered on `dwmc:core` via three parallel builder stages |
 
 ## Building
 
@@ -21,7 +19,7 @@ Three images built in sequence:
 ./build.sh
 ```
 
-This builds all three images in order. The `CONTAINER_RUNTIME` environment variable defaults to `container` and can be overridden:
+This builds all four images in order. The `CONTAINER_RUNTIME` environment variable defaults to `container` and can be overridden:
 
 ```sh
 CONTAINER_RUNTIME=docker ./build.sh
@@ -33,8 +31,9 @@ The tools image downloads pre-built binaries at pinned versions. Override them w
 
 | Build arg | Default | Tool |
 |-----------|---------|------|
-| `GIT_VERSION` | `2.55.0` | Git (compiled from source) |
+| `GIT_VERSION` | `2.55.0` | Git (compiled from source in `rust:1-bookworm` builder stage) |
 | `CRUSH_VERSION` | `0.90.0` | Crush |
+| `JJ_VERSION` | `0.44.0` | Jujutsu (jj) |
 | `HELIX_VERSION` | `25.07.1` | Helix editor |
 | `RIPGREP_VERSION` | `15.2.0` | ripgrep |
 | `GH_VERSION` | `2.98.0` | GitHub CLI |

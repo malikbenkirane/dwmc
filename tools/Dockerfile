@@ -26,8 +26,9 @@ RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo arm64;; esac) 
     install -m 755 "/tmp/crush_${CRUSH_VERSION}_Linux_${arch}/crush" /usr/local/bin/crush && \
     rm -rf /tmp/crush.tar.gz "/tmp/crush_${CRUSH_VERSION}_Linux_${arch}"
 
+ARG JJ_VERSION=0.44.0
 RUN arch=$(case "$TARGETARCH" in amd64) echo x86_64;; arm64) echo aarch64;; esac) && \
-    curl -fsSL "https://github.com/jj-vcs/jj/releases/download/v0.44.0/jj-v0.44.0-${arch}-unknown-linux-musl.tar.gz" -o /tmp/jj.tar.gz && \
+    curl -fsSL "https://github.com/jj-vcs/jj/releases/download/v${JJ_VERSION}/jj-v${JJ_VERSION}-${arch}-unknown-linux-musl.tar.gz" -o /tmp/jj.tar.gz && \
     tar -xzf /tmp/jj.tar.gz -C /tmp && \
     install -m 755 /tmp/jj /usr/local/bin/jj && \
     rm -rf /tmp/jj.tar.gz /tmp/jj
