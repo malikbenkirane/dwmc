@@ -9,6 +9,7 @@ RUN apt-get update && \
 
 USER agent
 WORKDIR /home/agent
+RUN mkdir -p /home/agent/.config
 
 # Install ProggyClean Nerd Font
 RUN curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.0/ProggyClean.zip -o /tmp/ProggyClean.zip && \
