@@ -25,6 +25,11 @@ RUN git clone https://github.com/Echinoidea/Aporetic-Nerd-Font /tmp/aporetic && 
     rm -rf /tmp/aporetic && \
     fc-cache -f
 
+# Configure kitty terminal
+RUN mkdir -p /home/agent/.config/kitty && \
+    printf 'shell /usr/bin/bash\nfont_family AporeticSansMonoNerdFont\n' \
+      > /home/agent/.config/kitty/kitty.conf
+
 # Build and install patched st
 COPY --chown=agent:agent st.diff /tmp/st.diff
 RUN git clone https://git.suckless.org/st /tmp/st && \
